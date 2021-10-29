@@ -13,20 +13,6 @@ namespace Salvo.Models
 
         }
 
-        //public DbSet<demo> demos { set; get; }
+        public DbSet<Player> Players { get; set; }
     }
-
-    /*
-    public class demo
-    {
-        public int id;
-
-        public int ID
-        {
-            get { return id; }
-            set { id = value; }
-        }
-    }
-    */
-
 }
