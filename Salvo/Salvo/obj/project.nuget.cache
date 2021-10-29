@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "HQRg6GZF1ESpsBz4hHfsR471DkQmswmnMY83nQ7CTHM/4d9u/gWqBZwwhIRKj02/USmD5RgIkdGvsOTaq0J1Yg==",
+  "dgSpecHash": "N48AvZQE2VBWmjiTNhCYbbkAjYLHcfWBZlJGpO/wpmH5yvJsp3SaovmmFKF2Ho+2ItlX/PGXbS/ZnrX21iPhdw==",
   "success": true,
-  "projectFilePath": "C:\\Users\\fran_\\source\\repos\\Salvo\\Salvo\\Salvo.csproj",
+  "projectFilePath": "C:\\Users\\fran_\\OneDrive\\Desktop\\Proyecto Salvo\\salvo_compra_gamer\\Salvo\\Salvo\\Salvo.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\fran_\\.nuget\\packages\\microsoft.csharp\\4.5.0\\microsoft.csharp.4.5.0.nupkg.sha512",
     "C:\\Users\\fran_\\.nuget\\packages\\microsoft.data.sqlclient\\2.0.1\\microsoft.data.sqlclient.2.0.1.nupkg.sha512",

@@ -6335,11 +6335,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\fran_\\source\\repos\\Salvo\\Salvo\\Salvo.csproj",
+      "projectUniqueName": "C:\\Users\\fran_\\OneDrive\\Desktop\\Proyecto Salvo\\salvo_compra_gamer\\Salvo\\Salvo\\Salvo.csproj",
       "projectName": "Salvo",
-      "projectPath": "C:\\Users\\fran_\\source\\repos\\Salvo\\Salvo\\Salvo.csproj",
+      "projectPath": "C:\\Users\\fran_\\OneDrive\\Desktop\\Proyecto Salvo\\salvo_compra_gamer\\Salvo\\Salvo\\Salvo.csproj",
       "packagesPath": "C:\\Users\\fran_\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\fran_\\source\\repos\\Salvo\\Salvo\\obj\\",
+      "outputPath": "C:\\Users\\fran_\\OneDrive\\Desktop\\Proyecto Salvo\\salvo_compra_gamer\\Salvo\\Salvo\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
