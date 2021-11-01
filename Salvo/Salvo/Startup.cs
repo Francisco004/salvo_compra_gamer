@@ -5,10 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Salvo.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using Salvo.Repositories;
 
 namespace Salvo
 {
@@ -28,6 +25,7 @@ namespace Salvo
             services.AddDbContext<SalvoContext>(options => 
                 options.UseSqlServer(Configuration.GetConnectionString("SalvoDatabase")
             ));
+            services.AddScoped<IGameRepository, GameRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -51,6 +49,9 @@ namespace Salvo
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapRazorPages();
+                endpoints.MapControllerRoute(
+                name: "default",
+                pattern: "{controller=games}/{ action = Get}");
             });
         }
     }
