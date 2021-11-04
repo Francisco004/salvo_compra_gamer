@@ -19,11 +19,12 @@ namespace Salvo.Repositories
             return this.FindAll().OrderBy(game => game.CreationDate).ToList();
         }
 
-        /*
         public IEnumerable<Game> GetAllGamesWithPlayers()
         {
-            return this.FindAll(source => source.Incluide(game => game.));;
+            return FindAll(source => source.Include(game => game.GamePlayers)
+                    .ThenInclude(gameplayer => gameplayer.Player))
+                .OrderBy(game => game.CreationDate)
+                .ToList();
         }
-        */
     }
 }

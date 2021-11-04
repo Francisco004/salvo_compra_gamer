@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Salvo.Models;
 using Salvo.Repositories;
 using System;
 using System.Collections.Generic;
@@ -25,7 +26,7 @@ namespace Salvo.Controllers
         {
             try
             {
-                var games = _repository.GetAllGames();
+                var games = _repository.GetAllGamesWithPlayers().Select(newGame => new GameDTO { Id = newGame.Id, CreationDate = newGame.CreationDate, GamePlayers = newGame.GamePlayers.Select(newGamePlayerDTO => new GamePlayerDTO { Id = newGamePlayerDTO.Id, JoinDate = newGamePlayerDTO.JoinDate, Player = new PlayerDTO { Id = newGamePlayerDTO.Player.Id, Email = newGamePlayerDTO.Player.Email } }).ToList()}).ToList();
                 return Ok(games);
             }
             catch (Exception ex)
