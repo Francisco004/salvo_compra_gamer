@@ -21,7 +21,7 @@ namespace Salvo.Controllers
             _repository = repository;
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("{id}", Name = "GetGameView")]
         public IActionResult GetGameView(int id)
         {
             try
@@ -58,6 +58,22 @@ namespace Salvo.Controllers
 
                        GameView.Ships.Add(shipDTO);
                 };
+
+                GameView.Salvos = gameplayer.Game.GamePlayers.SelectMany(gps => gps.Salvos.Select(salvo => new SalvoDTO
+                {
+                    Id = salvo.Id,
+                    Turn = salvo.Turn,
+                    Player = new PlayerDTO
+                    {
+                        Id = gps.Player.Id,
+                        Email = gps.Player.Email
+                    },
+                    Locations = salvo.Locations.Select(salvoLocation => new SalvoLocationDTO
+                    {
+                        Id = salvoLocation.Id,
+                        Location = salvoLocation.Location
+                    }).ToList()
+                })).ToList();
 
                 return Ok(GameView);
             }
