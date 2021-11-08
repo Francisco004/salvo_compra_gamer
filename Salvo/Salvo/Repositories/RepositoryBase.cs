@@ -26,12 +26,11 @@ namespace Salvo.Repositories
         {
             IQueryable<T> queryable = this.RepositoryContext.Set<T>();
 
-            if(includes != null)
+            if (includes != null)
             {
                 queryable = includes(queryable);
             }
-
-            return queryable.AsNoTracking();
+            return queryable.AsNoTrackingWithIdentityResolution();
         }
 
         public IQueryable<T> FindByCondition(Expression<Func<T, bool>> expression)

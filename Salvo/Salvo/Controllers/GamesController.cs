@@ -20,6 +20,7 @@ namespace Salvo.Controllers
         {
             _repository = repository;
         }
+
         // GET: api/<GamesController>
         [HttpGet]
         public IActionResult Get()
