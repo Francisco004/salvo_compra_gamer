@@ -12,5 +12,7 @@ namespace Salvo.Models
         public DateTime? JoinDate { get; set; }
 
         public PlayerDTO Player { get; set; }
+
+        public double? Point { get; set; }
     }
 }

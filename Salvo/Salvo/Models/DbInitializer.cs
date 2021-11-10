@@ -24,6 +24,8 @@ namespace Salvo.Models
                 {
                     context.Players.Add(p);
                 }
+
+                context.SaveChanges();
             }
             #endregion
 
@@ -48,6 +50,8 @@ namespace Salvo.Models
                 {
                     context.Games.Add(g);
                 }
+
+                context.SaveChanges();
             }
             #endregion
 
@@ -76,6 +80,8 @@ namespace Salvo.Models
                 {
                     context.GamePlayers.Add(gp);
                 }
+
+                context.SaveChanges();
             }
             #endregion
 
@@ -286,6 +292,8 @@ namespace Salvo.Models
                 {
                     context.Ships.Add(ship);
                 }
+
+                context.SaveChanges();
             }
             #endregion
 
@@ -456,10 +464,103 @@ namespace Salvo.Models
                 {
                     context.Salvos.Add(salvo);
                 }
+
+                context.SaveChanges();
             }
             #endregion
 
-            context.SaveChanges();
+            #region Points
+            if (!context.Scores.Any())
+            {
+                Game game1 = context.Games.Find(1L);
+                Game game2 = context.Games.Find(2L);
+                Game game3 = context.Games.Find(3L);
+                Game game4 = context.Games.Find(4L);
+                Game game5 = context.Games.Find(5L);
+                Game game6 = context.Games.Find(6L);
+                Game game7 = context.Games.Find(7L);
+                Game game8 = context.Games.Find(8L);
+
+                Player jbauer = context.Players.Find(1L);
+                Player obrian = context.Players.Find(2L);
+                Player kbauer = context.Players.Find(3L);
+                Player almeida = context.Players.Find(4L);
+
+                var scores = new Score[]
+                {
+                    //jbauer gp1
+                    new Score {
+                        Game = game1,
+                        Player = jbauer,
+                        FinishDate = DateTime.Now,
+                        Point = 1
+                    },
+
+                    //obrian gp2
+                    new Score {
+                        Game = game1,
+                        Player = obrian,
+                        FinishDate = DateTime.Now,
+                        Point = 0
+                    },
+
+                    //jbauer gp3
+                    new Score {
+                        Game = game2,
+                        Player = jbauer,
+                        FinishDate = DateTime.Now,
+                        Point = 0.5
+                    },
+
+                    //obrian gp4
+                    new Score {
+                        Game = game2,
+                        Player = obrian,
+                        FinishDate = DateTime.Now,
+                        Point = 0.5
+                    },
+
+                    //obrian gp5
+                    new Score {
+                        Game = game3,
+                        Player = obrian,
+                        FinishDate = DateTime.Now,
+                        Point = 0
+                    },
+
+                    //almeida gp6
+                    new Score {
+                        Game = game3,
+                        Player = almeida,
+                        FinishDate = DateTime.Now,
+                        Point = 1
+                    },
+
+                    //obrian gp7
+                    new Score {
+                        Game = game4,
+                        Player = obrian,
+                        FinishDate = DateTime.Now,
+                        Point = 0.5
+                    },
+
+                    //jbauer gp8
+                    new Score {
+                        Game = game4,
+                        Player = jbauer,
+                        FinishDate = DateTime.Now,
+                        Point = 0.5
+                    },
+                };
+
+                foreach (Score score in scores)
+                {
+                    context.Scores.Add(score);
+                }
+
+                context.SaveChanges();
+            }
+            #endregion
         }
     }
 }

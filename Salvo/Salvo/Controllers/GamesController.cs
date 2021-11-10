@@ -27,7 +27,25 @@ namespace Salvo.Controllers
         {
             try
             {
-                var games = _repository.GetAllGamesWithPlayers().Select(newGame => new GameDTO { Id = newGame.Id, CreationDate = newGame.CreationDate, GamePlayers = newGame.GamePlayers.Select(newGamePlayerDTO => new GamePlayerDTO { Id = newGamePlayerDTO.Id, JoinDate = newGamePlayerDTO.JoinDate, Player = new PlayerDTO { Id = newGamePlayerDTO.Player.Id, Email = newGamePlayerDTO.Player.Email } }).ToList()}).ToList();
+                var games = _repository.GetAllGamesWithPlayers().Select(game =>
+                {
+                    return new GameDTO
+                    {
+                        Id = game.Id,
+                        CreationDate = game.CreationDate,
+                        GamePlayers = game.GamePlayers.Select(gameplayer =>
+                        {
+                            return new GamePlayerDTO
+                            {
+                                Id = gameplayer.Id,
+                                JoinDate = gameplayer.JoinDate,
+                                Player = new PlayerDTO { Id = gameplayer.Player.Id, Email = gameplayer.Player.Email },
+                                Point = gameplayer.GetScore() != null ? gameplayer.GetScore().Point : 0
+                            };
+                        }).ToList()
+                    };
+                }).ToList();
+
                 return Ok(games);
             }
             catch (Exception ex)
