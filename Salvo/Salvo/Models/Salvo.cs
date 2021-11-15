@@ -9,11 +9,11 @@ namespace Salvo.Models
     {
         public long Id { get; set; }
 
+        public long Turn { get; set; }
+
         public long GamePlayerID { get; set; }
 
         public GamePlayer GamePlayer { get; set; }
-
-        public long Turn { get; set; }
 
         public ICollection<SalvoLocation> Locations { get; set; }
     }

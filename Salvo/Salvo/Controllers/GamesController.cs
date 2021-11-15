@@ -1,52 +1,57 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Salvo.Models;
 using Salvo.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace Salvo.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/games")]
     [ApiController]
+    [Authorize]
     public class GamesController : ControllerBase
     {
         private IGameRepository _repository;
-
         public GamesController(IGameRepository repository)
         {
             _repository = repository;
         }
 
-        // GET: api/<GamesController>
+        // GET: api/Games
         [HttpGet]
+        [AllowAnonymous]
         public IActionResult Get()
         {
             try
             {
-                var games = _repository.GetAllGamesWithPlayers().Select(game =>
+                GameListDTO gamelist = new GameListDTO
                 {
-                    return new GameDTO
+                    Email = User.FindFirst("Player") != null ? User.FindFirst("Player").Value : "Guest",
+                    Games = _repository.GetAllGamesWithPlayers().Select(game => new GameDTO
                     {
                         Id = game.Id,
                         CreationDate = game.CreationDate,
-                        GamePlayers = game.GamePlayers.Select(gameplayer =>
+                        GamePlayers = game.GamePlayers.Select(gp => new GamePlayerDTO
                         {
-                            return new GamePlayerDTO
+                            Id = gp.Id,
+                            JoinDate = gp.JoinDate,
+                            Player = new PlayerDTO
                             {
-                                Id = gameplayer.Id,
-                                JoinDate = gameplayer.JoinDate,
-                                Player = new PlayerDTO { Id = gameplayer.Player.Id, Email = gameplayer.Player.Email },
-                                Point = gameplayer.GetScore() != null ? gameplayer.GetScore().Point : 0
-                            };
+                                Id = gp.Player.Id,
+                                Email = gp.Player.Email
+                            },
+                            Point = gp.GetScore() != null ? (double?)gp.GetScore().Point : null
                         }).ToList()
-                    };
-                }).ToList();
+                    }).ToList()
+                };
 
-                return Ok(games);
+                return Ok(gamelist);
             }
             catch (Exception ex)
             {
