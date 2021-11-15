@@ -17,5 +17,11 @@ namespace Salvo.Repositories
         {
             return FindByCondition(player => player.Email == Email).FirstOrDefault();
         }
+
+        public void Save(Player player)
+        {
+            Create(player);
+            SaveChanges();
+        }
     }
 }
