@@ -28,7 +28,14 @@ namespace Salvo.Controllers
         {
             try
             {
+                string email = User.FindFirst("Player") != null ? User.FindFirst("Player").Value : "Guest";
+
                 var gameplayer = _repository.GetGamePlayerView(id);
+
+                if(gameplayer.Player.Email != email)
+                {
+                    return Forbid();
+                }
 
                 var GameView = new GameViewDTO();
                 GameView.Id = gameplayer.Id;

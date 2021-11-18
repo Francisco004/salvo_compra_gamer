@@ -9,5 +9,7 @@ namespace Salvo.Repositories
     public interface IGamePlayerRepository
     {
         public GamePlayer GetGamePlayerView(int idGamePlayer);
+
+        void Save(GamePlayer gamePlayer);
     }
 }
