@@ -8,8 +8,10 @@ namespace Salvo.Repositories
 {
     public interface IGamePlayerRepository
     {
-        public GamePlayer GetGamePlayerView(int idGamePlayer);
+        public GamePlayer GetGamePlayerView(long idGamePlayer);
 
         void Save(GamePlayer gamePlayer);
+
+        public GamePlayer FindById(long id);
     }
 }

@@ -5,6 +5,7 @@ using Salvo.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -16,7 +17,7 @@ namespace Salvo.Controllers
     [Authorize("PlayerOnly")]
     public class GamePlayersController : ControllerBase
     {
-        private IGamePlayerRepository _repository;
+        private readonly IGamePlayerRepository _repository;
 
         public GamePlayersController(IGamePlayerRepository repository)
         {
@@ -37,10 +38,12 @@ namespace Salvo.Controllers
                     return Forbid();
                 }
 
-                var GameView = new GameViewDTO();
-                GameView.Id = gameplayer.Id;
-                GameView.CreationDate = gameplayer.Game.CreationDate;
-                GameView.GamePlayers = new List<GamePlayerDTO>();
+                var GameView = new GameViewDTO
+                {
+                    Id = gameplayer.Id,
+                    CreationDate = gameplayer.Game.CreationDate,
+                    GamePlayers = new List<GamePlayerDTO>()
+                };
 
                 foreach (var gp in gameplayer.Game.GamePlayers)
                 {
@@ -91,5 +94,54 @@ namespace Salvo.Controllers
                 return StatusCode(500, "Internal server error " + ex.Message);
             }
         }
+
+        [HttpPost("{id}/ships")]
+        public IActionResult Post(long id, [FromBody] List<ShipDTO> barcos)
+        {
+            try
+            {
+                GamePlayer game = _repository.FindById(id);
+
+                if (game == null)
+                {
+                    return StatusCode(403, "No existe el juego");
+                }
+
+                if (game.Player.Email != User.FindFirst("Player").Value)
+                {
+                    return StatusCode(403, "Ya se han posicionado los barcos");
+                }
+
+                if (game.Ships.Count == 5)
+                {
+                    return StatusCode(403, "Ya se han posicionado los barcos");
+                }
+
+                List<Ship> newShips = new();
+
+                foreach(var shipDTO in barcos)
+                {
+                    Ship s = new()
+                    {
+                        Type = shipDTO.Type,
+                        Locations = shipDTO.Locations.Select(shipLocation => new ShipLocation { Location = shipLocation.Location }).ToList()
+                    };
+
+                    newShips.Add(s);
+                }
+
+                //game.Ships = (ICollection<Ship>)barcos;
+                game.Ships = newShips;
+                _repository.Save(game);
+
+                return StatusCode(201, "Created");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(403, ex.Message);
+            }
+        }
     }
 }
+
+
