@@ -193,9 +193,8 @@ C:\Users\fran_\OneDrive\Desktop\Proyecto Salvo\salvo_compra_gamer\Salvo\Salvo\ob
 C:\Users\fran_\OneDrive\Desktop\Proyecto Salvo\salvo_compra_gamer\Salvo\Salvo\obj\Debug\net5.0\Salvo.MvcApplicationPartsAssemblyInfo.cache
 C:\Users\fran_\OneDrive\Desktop\Proyecto Salvo\salvo_compra_gamer\Salvo\Salvo\obj\Debug\net5.0\Salvo.RazorAssemblyInfo.cache
 C:\Users\fran_\OneDrive\Desktop\Proyecto Salvo\salvo_compra_gamer\Salvo\Salvo\obj\Debug\net5.0\Salvo.RazorAssemblyInfo.cs
-C:\Users\fran_\OneDrive\Desktop\Proyecto Salvo\salvo_compra_gamer\Salvo\Salvo\obj\Debug\net5.0\staticwebassets\Salvo.StaticWebAssets.Manifest.cache
-C:\Users\fran_\OneDrive\Desktop\Proyecto Salvo\salvo_compra_gamer\Salvo\Salvo\obj\Debug\net5.0\staticwebassets\Salvo.StaticWebAssets.xml
 C:\Users\fran_\OneDrive\Desktop\Proyecto Salvo\salvo_compra_gamer\Salvo\Salvo\obj\Debug\net5.0\scopedcss\bundle\Salvo.styles.css
+C:\Users\fran_\OneDrive\Desktop\Proyecto Salvo\salvo_compra_gamer\Salvo\Salvo\obj\Debug\net5.0\staticwebassets\Salvo.StaticWebAssets.Manifest.cache
 C:\Users\fran_\OneDrive\Desktop\Proyecto Salvo\salvo_compra_gamer\Salvo\Salvo\obj\Debug\net5.0\Salvo.TagHelpers.input.cache
 C:\Users\fran_\OneDrive\Desktop\Proyecto Salvo\salvo_compra_gamer\Salvo\Salvo\obj\Debug\net5.0\Salvo.TagHelpers.output.cache
 C:\Users\fran_\OneDrive\Desktop\Proyecto Salvo\salvo_compra_gamer\Salvo\Salvo\obj\Debug\net5.0\Salvo.RazorCoreGenerate.cache

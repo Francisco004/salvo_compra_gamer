@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "MhqcK4csCSQaKnscaMUf4HKp3ZH2/jrIblHemlIu0nrqe41ta+wctpb1XhVM0Mq30sdHQM0zOrKp4rxM+SLqKA==",
+  "dgSpecHash": "+MSEX2RVYLkvnuAH5EJwzHy4361ufV7jKgmRXNRs+y1Dm0UWTrCYpvQafxcjNaQ81On1qRGek2F4g95z3OovnQ==",
   "success": true,
   "projectFilePath": "C:\\Users\\fran_\\OneDrive\\Desktop\\Proyecto Salvo\\salvo_compra_gamer\\Salvo\\Salvo\\Salvo.csproj",
   "expectedPackageFiles": [
@@ -132,7 +132,8 @@
     "C:\\Users\\fran_\\.nuget\\packages\\system.xml.readerwriter\\4.3.0\\system.xml.readerwriter.4.3.0.nupkg.sha512",
     "C:\\Users\\fran_\\.nuget\\packages\\system.xml.xdocument\\4.3.0\\system.xml.xdocument.4.3.0.nupkg.sha512",
     "C:\\Users\\fran_\\.nuget\\packages\\system.xml.xmldocument\\4.3.0\\system.xml.xmldocument.4.3.0.nupkg.sha512",
-    "C:\\Users\\fran_\\.nuget\\packages\\system.xml.xmlserializer\\4.3.0\\system.xml.xmlserializer.4.3.0.nupkg.sha512"
+    "C:\\Users\\fran_\\.nuget\\packages\\system.xml.xmlserializer\\4.3.0\\system.xml.xmlserializer.4.3.0.nupkg.sha512",
+    "C:\\Users\\fran_\\.nuget\\packages\\microsoft.netcore.app.host.win-x64\\5.0.12\\microsoft.netcore.app.host.win-x64.5.0.12.nupkg.sha512"
   ],
   "logs": []
 }

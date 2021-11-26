@@ -18,10 +18,12 @@ namespace Salvo.Controllers
     public class GamePlayersController : ControllerBase
     {
         private readonly IGamePlayerRepository _repository;
+        private readonly IPlayerRepository _playerRepository;
 
-        public GamePlayersController(IGamePlayerRepository repository)
+        public GamePlayersController(IGamePlayerRepository repository, IPlayerRepository playerrepository)
         {
             _repository = repository;
+            _playerRepository = playerrepository;
         }
 
         [HttpGet("{id}", Name = "GetGameView")]
@@ -96,7 +98,7 @@ namespace Salvo.Controllers
         }
 
         [HttpPost("{id}/ships")]
-        public IActionResult Post(long id, [FromBody] List<ShipDTO> barcos)
+        public IActionResult Post(long id, [FromBody] List<ShipDTO> ship)
         {
             try
             {
@@ -109,7 +111,7 @@ namespace Salvo.Controllers
 
                 if (game.Player.Email != User.FindFirst("Player").Value)
                 {
-                    return StatusCode(403, "Ya se han posicionado los barcos");
+                    return StatusCode(403, "El usuario no se encuentra en el juego");
                 }
 
                 if (game.Ships.Count == 5)
@@ -117,21 +119,13 @@ namespace Salvo.Controllers
                     return StatusCode(403, "Ya se han posicionado los barcos");
                 }
 
-                List<Ship> newShips = new();
-
-                foreach(var shipDTO in barcos)
+                game.Ships = ship.Select(ship => new Ship
                 {
-                    Ship s = new()
-                    {
-                        Type = shipDTO.Type,
-                        Locations = shipDTO.Locations.Select(shipLocation => new ShipLocation { Location = shipLocation.Location }).ToList()
-                    };
+                    GamePlayerId = game.Id,
+                    Type = ship.Type,
+                    Locations = ship.Locations.Select(location => new ShipLocation { ShipId = ship.Id, Location = location.Location }).ToList()
+                }).ToList();
 
-                    newShips.Add(s);
-                }
-
-                //game.Ships = (ICollection<Ship>)barcos;
-                game.Ships = newShips;
                 _repository.Save(game);
 
                 return StatusCode(201, "Created");
@@ -139,6 +133,67 @@ namespace Salvo.Controllers
             catch (Exception ex)
             {
                 return StatusCode(403, ex.Message);
+            }
+        }
+
+        [HttpPost("{id}/salvos")]
+        public IActionResult Post(long id, [FromBody] SalvoDTO salvo)
+        {
+            try
+            {
+                GamePlayer gamePlayer = _repository.FindById(id);
+                
+                if(gamePlayer == null)
+                {
+                    return StatusCode(403, "No existe el juego.");
+                }
+                else if (gamePlayer.Player.Email != User.FindFirst("Player").Value)
+                {
+                    return StatusCode(403, "El usuario no se encuentra en el juego.");
+                }
+
+                GamePlayer opponentGamePlayer = gamePlayer.GetOpponent();
+
+                if (gamePlayer.Game.GamePlayers.Count != 2)
+                {
+                    return StatusCode(403, "No hay a quien disparar.");
+                }
+
+                if(gamePlayer.Ships.Count == 0)
+                {
+                    return StatusCode(403, "El usuario logeado no ha pisicionado los barcos");
+                }
+
+                if (opponentGamePlayer.Ships.Count == 0)
+                {
+                    return StatusCode(403, "El oponente no ha pisicionado los barcos");
+                }
+
+                int playerTurn = gamePlayer.Salvos != null ? gamePlayer.Salvos.Count + 1 : 1;
+                int opponentTurn = opponentGamePlayer.Salvos != null ? opponentGamePlayer.Salvos.Count : 0;
+
+                if ((playerTurn - opponentTurn) < -1 || (playerTurn - opponentTurn) > 1)
+                {
+                    return StatusCode(500, "No se puede adelantar el turno");
+                }
+
+                gamePlayer.Salvos.Add(new Models.Salvo
+                {
+                    Turn = playerTurn,
+                    GamePlayerID = gamePlayer.Id,
+                    Locations = salvo.Locations.Select(location => new SalvoLocation 
+                    { 
+                        Location = location.Location
+                    }).ToList()
+                });
+
+                _repository.Save(gamePlayer);
+
+                return StatusCode(201, gamePlayer.Id);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
             }
         }
     }
