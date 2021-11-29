@@ -44,7 +44,11 @@ namespace Salvo.Controllers
                 {
                     Id = gameplayer.Id,
                     CreationDate = gameplayer.Game.CreationDate,
-                    GamePlayers = new List<GamePlayerDTO>()
+                    GamePlayers = new List<GamePlayerDTO>(),
+                    Hits = gameplayer.GetHits(),
+                    HitsOpponent = gameplayer.GetOpponent()?.GetHits(),
+                    Sunks = gameplayer.GetSunks(),
+                    SunksOpponent = gameplayer.GetOpponent()?.GetSunks()
                 };
 
                 foreach (var gp in gameplayer.Game.GamePlayers)
@@ -88,6 +92,7 @@ namespace Salvo.Controllers
                         Location = salvoLocation.Location
                     }).ToList()
                 })).ToList();
+               
 
                 return Ok(GameView);
             }
@@ -189,7 +194,7 @@ namespace Salvo.Controllers
 
                 _repository.Save(gamePlayer);
 
-                return StatusCode(201, gamePlayer.Id);
+                return StatusCode(201, "Exito");
             }
             catch (Exception ex)
             {
