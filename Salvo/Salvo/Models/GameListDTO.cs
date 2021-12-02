@@ -9,5 +9,6 @@ namespace Salvo.Models
     {
         public string Email { get; set; }
         public ICollection<GameDTO> Games { get; set; }
+        public string Name { get; set; }
     }
 }

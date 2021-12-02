@@ -18,87 +18,90 @@ namespace Salvo.Controllers
     public class GamePlayersController : ControllerBase
     {
         private readonly IGamePlayerRepository _repository;
-        private readonly IPlayerRepository _playerRepository;
+        private readonly IScoreReposirory _scoreReposirory;
 
-        public GamePlayersController(IGamePlayerRepository repository, IPlayerRepository playerrepository)
+        public GamePlayersController(IGamePlayerRepository repository, IScoreReposirory scoreReposirory)
         {
             _repository = repository;
-            _playerRepository = playerrepository;
+            _scoreReposirory = scoreReposirory;
         }
 
         [HttpGet("{id}", Name = "GetGameView")]
-        public IActionResult GetGameView(int id)
+        public IActionResult GetGameView(long id)
         {
             try
             {
-                string email = User.FindFirst("Player") != null ? User.FindFirst("Player").Value : "Guest";
-
+                var email = User.FindFirst("Player") != null ? User.FindFirst("Player").Value : "Guest";
                 var gameplayer = _repository.GetGamePlayerView(id);
+                if (gameplayer.Player.Email == email)
+                {
+                    var gameView = new GameViewDTO();
+                    {
+                        gameView.Id = gameplayer.Id;
+                        gameView.CreationDate = gameplayer.Game.CreationDate;
+                        gameView.GamePlayers = new List<GamePlayerDTO>();
 
-                if(gameplayer.Player.Email != email)
+                    }
+
+                    foreach (var gp in gameplayer.Game.GamePlayers)
+                    {
+                        var gpDTO = new GamePlayerDTO
+                        {
+                            Id = gp.Id,
+                            JoinDate = gp.JoinDate,
+                            Player = new PlayerDTO { Id = gp.Player.Id, Email = gp.Player.Email, Name = gp.Player.Name }
+                        };
+                        gameView.GamePlayers.Add(gpDTO);
+                    }
+
+                    gameView.Ships = new List<ShipDTO>();
+                    foreach (var ship in gameplayer.Ships)
+                    {
+                        var shipDTO = new ShipDTO
+                        {
+                            Id = ship.Id,
+                            Type = ship.Type,
+                            Locations = ship.Locations.Select(location => new ShipLocationDTO { Id = location.Id, Location = location.Location }).ToList()
+                        };
+                        gameView.Ships.Add(shipDTO);
+                    };
+
+                    gameView.Salvos = gameplayer.Game.GamePlayers.SelectMany(gps => gps.Salvos.Select(salvo => new SalvoDTO
+                    {
+                        Id = salvo.Id,
+                        Turn = salvo.Turn,
+                        Player = new PlayerDTO
+                        {
+                            Id = gps.Player.Id,
+                            Email = gps.Player.Email
+                        },
+                        Locations = salvo.Locations.Select(salvoLocation => new SalvoLocationDTO
+                        {
+                            Id = salvoLocation.Id,
+                            Location = salvoLocation.Location
+                        }).ToList()
+                    })).ToList();
+
+                    gameView.Hits = gameplayer.GetHits();
+
+                    gameView.HitsOpponent = gameplayer.GetOpponent()?.GetHits();
+
+                    gameView.Sunks = gameplayer.GetSunks();
+
+                    gameView.SunksOpponent = gameplayer.GetOpponent()?.GetSunks();
+
+                    gameView.GameState = Enum.GetName(typeof(GameState), gameplayer.GetGameState());
+
+                    return Ok(gameView);
+                }
+                else
                 {
                     return Forbid();
                 }
-
-                var GameView = new GameViewDTO
-                {
-                    Id = gameplayer.Id,
-                    CreationDate = gameplayer.Game.CreationDate,
-                    GamePlayers = new List<GamePlayerDTO>(),
-                    Hits = gameplayer.GetHits(),
-                    HitsOpponent = gameplayer.GetOpponent()?.GetHits(),
-                    Sunks = gameplayer.GetSunks(),
-                    SunksOpponent = gameplayer.GetOpponent()?.GetSunks()
-                };
-
-                foreach (var gp in gameplayer.Game.GamePlayers)
-                {
-                    var gpDTO = new GamePlayerDTO
-                    {
-                      Id = gp.Id,
-                      JoinDate = gp.JoinDate,
-                      Player = new PlayerDTO { Id = gp.Player.Id, Email = gp.Player.Email },
-                    };
-
-                    GameView.GamePlayers.Add(gpDTO);
-                }
-
-                GameView.Ships = new List<ShipDTO>();
-
-                foreach (var ship in gameplayer.Ships)
-                {
-                   var shipDTO = new ShipDTO
-                   {
-                       Id = ship.Id,
-                       Type = ship.Type,
-                       Locations = ship.Locations.Select(location => new ShipLocationDTO { Id = location.Id, Location = location.Location }).ToList()
-                   };
-
-                       GameView.Ships.Add(shipDTO);
-                };
-
-                GameView.Salvos = gameplayer.Game.GamePlayers.SelectMany(gps => gps.Salvos.Select(salvo => new SalvoDTO
-                {
-                    Id = salvo.Id,
-                    Turn = salvo.Turn,
-                    Player = new PlayerDTO
-                    {
-                        Id = gps.Player.Id,
-                        Email = gps.Player.Email
-                    },
-                    Locations = salvo.Locations.Select(salvoLocation => new SalvoLocationDTO
-                    {
-                        Id = salvoLocation.Id,
-                        Location = salvoLocation.Location
-                    }).ToList()
-                })).ToList();
-               
-
-                return Ok(GameView);
             }
             catch (Exception ex)
             {
-                return StatusCode(500, "Internal server error " + ex.Message);
+                return StatusCode(500, ex.Message);
             }
         }
 
@@ -146,55 +149,120 @@ namespace Salvo.Controllers
         {
             try
             {
-                GamePlayer gamePlayer = _repository.FindById(id);
-                
-                if(gamePlayer == null)
+                var gameplayer = _repository.FindById(id);
+
+                if (gameplayer == null)
                 {
-                    return StatusCode(403, "No existe el juego.");
+                    return StatusCode(403, "No existe el juego");
                 }
-                else if (gamePlayer.Player.Email != User.FindFirst("Player").Value)
+                else if (gameplayer.Player.Email != User.FindFirst("Player").Value)
                 {
                     return StatusCode(403, "El usuario no se encuentra en el juego.");
                 }
-
-                GamePlayer opponentGamePlayer = gamePlayer.GetOpponent();
-
-                if (gamePlayer.Game.GamePlayers.Count != 2)
+                else if (gameplayer.Game.GamePlayers.Count != 2)
                 {
-                    return StatusCode(403, "No hay a quien disparar.");
+                    return StatusCode(403, "El juego no ha iniciado aun.");
+                }
+                else if (gameplayer.Ships.Count == 0)
+                {
+                    return StatusCode(403, "El Usuario logueado no ha posicionado los barcos.");
                 }
 
-                if(gamePlayer.Ships.Count == 0)
+                GameState gameState = gameplayer.GetGameState();
+
+                if (gameState == GameState.LOSS || gameState == GameState.WIN || gameState == GameState.TIE)
                 {
-                    return StatusCode(403, "El usuario logeado no ha pisicionado los barcos");
+                    return StatusCode(403, "El juego ha terminado");
                 }
 
-                if (opponentGamePlayer.Ships.Count == 0)
+                GamePlayer opponent = gameplayer.GetOpponent();
+
+                if (opponent.Ships.Count == 0)
                 {
-                    return StatusCode(403, "El oponente no ha pisicionado los barcos");
+                    return StatusCode(403, "El oponente no ha posicionado los barcos.");
                 }
 
-                int playerTurn = gamePlayer.Salvos != null ? gamePlayer.Salvos.Count + 1 : 1;
-                int opponentTurn = opponentGamePlayer.Salvos != null ? opponentGamePlayer.Salvos.Count : 0;
+                int playerTurn = gameplayer.Salvos != null ? gameplayer.Salvos.Count + 1 : 1;
+                int opponentTurn = opponent.Salvos != null ? opponent.Salvos.Count : 0;
 
                 if ((playerTurn - opponentTurn) < -1 || (playerTurn - opponentTurn) > 1)
                 {
-                    return StatusCode(500, "No se puede adelantar el turno");
+                    return StatusCode(403, "No se puede adelantar el turno.");
                 }
 
-                gamePlayer.Salvos.Add(new Models.Salvo
+                gameplayer.Salvos.Add(new Models.Salvo
                 {
+                    GamePlayerID = gameplayer.Id,
                     Turn = playerTurn,
-                    GamePlayerID = gamePlayer.Id,
-                    Locations = salvo.Locations.Select(location => new SalvoLocation 
-                    { 
-                        Location = location.Location
-                    }).ToList()
+                    Locations = salvo.Locations.Select(location => new SalvoLocation { Location = location.Location }).ToList()
                 });
 
-                _repository.Save(gamePlayer);
+                _repository.Save(gameplayer);
 
-                return StatusCode(201, "Exito");
+                gameState = gameplayer.GetGameState();
+
+                if (gameState == GameState.WIN)
+                {
+                    var score = new Score
+                    {
+                        FinishDate = DateTime.Now,
+                        GameId = gameplayer.GameId,
+                        PlayerId = gameplayer.PlayerId,
+                        Point = 1
+                    };
+                    _scoreReposirory.Save(score);
+
+                    var scoreOpponent = new Score
+                    {
+                        FinishDate = DateTime.Now,
+                        GameId = gameplayer.GameId,
+                        PlayerId = opponent.PlayerId,
+                        Point = 0
+                    };
+                    _scoreReposirory.Save(scoreOpponent);
+                }
+                else if (gameState == GameState.LOSS)
+                {
+                    var score = new Score
+                    {
+                        FinishDate = DateTime.Now,
+                        GameId = gameplayer.GameId,
+                        PlayerId = gameplayer.PlayerId,
+                        Point = 0
+                    };
+                    _scoreReposirory.Save(score);
+
+                    var scoreOpponent = new Score
+                    {
+                        FinishDate = DateTime.Now,
+                        GameId = gameplayer.GameId,
+                        PlayerId = opponent.PlayerId,
+                        Point = 1
+                    };
+                    _scoreReposirory.Save(scoreOpponent);
+                }
+                else if (gameState == GameState.TIE)
+                {
+                    var score = new Score
+                    {
+                        FinishDate = DateTime.Now,
+                        GameId = gameplayer.GameId,
+                        PlayerId = gameplayer.PlayerId,
+                        Point = 0.5
+                    };
+                    _scoreReposirory.Save(score);
+
+                    var scoreOpponent = new Score
+                    {
+                        FinishDate = DateTime.Now,
+                        GameId = gameplayer.GameId,
+                        PlayerId = opponent.PlayerId,
+                        Point = 0.5
+                    };
+                    _scoreReposirory.Save(scoreOpponent);
+                }
+
+                return StatusCode(201, gameplayer.Id);
             }
             catch (Exception ex)
             {

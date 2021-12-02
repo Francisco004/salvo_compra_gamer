@@ -69,6 +69,7 @@ namespace Salvo.Controllers
                 GameListDTO gamelist = new GameListDTO
                 {
                     Email = User.FindFirst("Player") != null ? User.FindFirst("Player").Value : "Guest",
+                    Name = User.FindFirst("Player") != null ? _playerRepository.FindByEmail(User.FindFirst("Player").Value).Name : "Sin Nombre",
                     Games = _repository.GetAllGamesWithPlayers().Select(game => new GameDTO
                     {
                         Id = game.Id,
@@ -80,6 +81,7 @@ namespace Salvo.Controllers
                             Player = new PlayerDTO
                             {
                                 Id = gp.Player.Id,
+                                Name = gp.Player.Name,
                                 Email = gp.Player.Email
                             },
                             Point = gp.GetScore() != null ? (double?)gp.GetScore().Point : null
