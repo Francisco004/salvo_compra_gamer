@@ -25,9 +25,7 @@ namespace Salvo
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddRazorPages();
-            services.AddDbContext<SalvoContext>(options => 
-                options.UseSqlServer(Configuration.GetConnectionString("SalvoDatabase")
-            ));
+            services.AddDbContext<SalvoContext>(options => options.UseSqlServer(Configuration.GetConnectionString("SalvoDataBase"),o => o.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery)));
             services.AddScoped<IGameRepository, GameRepository>();
             services.AddScoped<IGamePlayerRepository, GamePlayerRepository>();
             services.AddScoped<IPlayerRepository, PlayerRepository>();

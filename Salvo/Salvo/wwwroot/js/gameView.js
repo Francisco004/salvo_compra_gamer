@@ -37,7 +37,7 @@ var app = new Vue({
             this.gameState = getGameState(this.gameView.gameState);
             if (this.gameView.gameState == 'WAIT') {
                 if (this.interval == null)
-                    this.interval = setInterval(this.refresh, 10000);
+                    this.interval = setInterval(this.refresh, 1000);
             }
             else {
                 clearInterval(this.interval);

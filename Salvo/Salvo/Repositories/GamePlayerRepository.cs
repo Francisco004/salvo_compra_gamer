@@ -15,7 +15,7 @@ namespace Salvo.Repositories
 
         }
 
-        public GamePlayer GetGamePlayerView(long idGamePlayer)
+        public GamePlayer GetGamePlayerView(int idGamePlayer)
         {
             return FindAll(source => source.Include(gamePlayer => gamePlayer.Ships)
                                            .ThenInclude(ship => ship.Locations)
@@ -66,6 +66,7 @@ namespace Salvo.Repositories
                                                     .Include(gp => gp.Player)
                                                     .Include(gp => gp.Ships)
                                                     .Include(gp => gp.Salvos)
+                                                    .AsSingleQuery()
                                                   .FirstOrDefault();
         }
     }

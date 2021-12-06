@@ -27,7 +27,7 @@ namespace Salvo.Controllers
         }
 
         [HttpGet("{id}", Name = "GetGameView")]
-        public IActionResult GetGameView(long id)
+        public IActionResult GetGameView(int id)
         {
             try
             {
